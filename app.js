@@ -55,7 +55,7 @@ app.use(
 app.use('/user', userRouter);
 app.use('/profile', profileRouter);
 
-port = 8000;
+port = process.env.PORT || 8000;
 app.listen(port, function() {
     console.log("server started on port :" + port);
 });
