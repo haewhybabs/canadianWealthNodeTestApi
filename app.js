@@ -1,9 +1,10 @@
 const express = require('express');
 const mysql = require('mysql');
-const userRouter = require('./routes/users.js');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 var expressValidator = require("express-validator");
+const userRouter = require('./routes/users.js');
+const profileRouter = require('./routes/profile.js');
 //Create Connection
 db = mysql.createConnection({
     host: 'localhost',
@@ -52,6 +53,7 @@ app.use(
 
 
 app.use('/user', userRouter);
+app.use('/profile', profileRouter);
 
 port = 8000;
 app.listen(port, function() {

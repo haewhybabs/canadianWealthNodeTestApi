@@ -95,7 +95,7 @@ router.post('/registration', (req, res, next) => {
 
 router.post('/login', passport.authenticate('local', { session: false }), function(req, res, next) {
     const user = req.user;
-    const token = signToken(user.id)
+    const token = signToken(user[0].id)
 
     res.status(200).json({
         status: true,
@@ -103,10 +103,6 @@ router.post('/login', passport.authenticate('local', { session: false }), functi
         data: user[0],
     });
 });
-
-// router.get('/secret', passport.authenticate('jwt', { session: false }), function(req, res, next) {
-//     console.log('i manage to log in');
-// })
 
 
 module.exports = router;
