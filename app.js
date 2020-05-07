@@ -7,10 +7,10 @@ const userRouter = require('./routes/users.js');
 const profileRouter = require('./routes/profile.js');
 //Create Connection
 db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'canadian_wealth_test'
+    host: 'sql7.freesqldatabase.com',
+    user: 'sql7338563',
+    password: 'Sp3CmRgtbA',
+    database: 'sql7338563'
 });
 
 //Connect
