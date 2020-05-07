@@ -3,12 +3,13 @@ const router = require('express-promise-router')();
 const JWT = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { JwT_SECRET } = require('../configuration.js');
+const passport = require('passport');
+const passportConf = require('../passport');
 
-
-signToken = result => {
+signToken = userId => {
     return JWT.sign({
         iss: 'canadianwealth',
-        sub: result.insertId,
+        sub: userId,
         iat: new Date().getTime(), //current time
         exp: new Date().setDate(new Date().getDate() + 1) //Current time + 1 day ahead
     }, JwT_SECRET);
@@ -43,6 +44,7 @@ router.post('/registration', (req, res, next) => {
 
         let sql = "Select * from users WHERE email=" + db.escape(req.body.email);
         db.query(sql, (err, result) => {
+
             if (err) { throw err }
 
             if (result.length > 0) {
@@ -72,7 +74,7 @@ router.post('/registration', (req, res, next) => {
 
                             newUser.id = result.insertId;
 
-                            const token = signToken(result)
+                            const token = signToken(result.insertId)
 
 
                             res.status(200).json({
@@ -89,7 +91,22 @@ router.post('/registration', (req, res, next) => {
         })
     }
 
-})
+});
+
+router.post('/login', passport.authenticate('local', { session: false }), function(req, res, next) {
+    const user = req.user;
+    const token = signToken(user.id)
+
+    res.status(200).json({
+        status: true,
+        token,
+        data: user[0],
+    });
+});
+
+// router.get('/secret', passport.authenticate('jwt', { session: false }), function(req, res, next) {
+//     console.log('i manage to log in');
+// })
 
 
 module.exports = router;
