@@ -40,6 +40,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), function(req,
 
 router.post('/upload', upload.single('profileImage'), passport.authenticate('jwt', { session: false }), function(req, res, next) {
     const imageName = req.file.filename;
+    const filePath = req.file.path;
 
     const today = new Date();
     const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -48,7 +49,7 @@ router.post('/upload', upload.single('profileImage'), passport.authenticate('jwt
 
     user = req.user[0];
     let sql = "UPDATE users SET image=?,updated_at=? WHERE id= ?";
-    db.query(sql, [imageName, currentDateTime, user.id], (err, result) => {
+    db.query(sql, [filePath, currentDateTime, user.id], (err, result) => {
 
         if (err) { throw err }
 
