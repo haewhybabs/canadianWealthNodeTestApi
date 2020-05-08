@@ -29,7 +29,7 @@ const upload = multer({
 
 });
 
-router.get('/', passport.authenticate('jwt', { session: false }), function(req, res, next) {
+router.post('/', passport.authenticate('jwt', { session: false }), function(req, res, next) {
 
     res.status(200).json({
         status: true,
@@ -41,10 +41,10 @@ router.get('/', passport.authenticate('jwt', { session: false }), function(req, 
 router.post('/upload', upload.single('profileImage'), passport.authenticate('jwt', { session: false }), function(req, res, next) {
     const imageName = req.file.filename;
 
-    var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var currentDateTime = date + ' ' + time;
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    const currentDateTime = date + ' ' + time;
 
     user = req.user[0];
     let sql = "UPDATE users SET image=?,updated_at=? WHERE id= ?";
@@ -69,16 +69,16 @@ router.post('/upload', upload.single('profileImage'), passport.authenticate('jwt
 })
 
 router.post('/update', passport.authenticate('jwt', { session: false }), function(req, res, next) {
-    var name = req.body.name;
+    const name = req.body.name;
 
-    var phoneNumber = req.body.phoneNumber;
+    const phoneNumber = req.body.phoneNumber;
 
     //Form Validation
     req.checkBody("name", "Name field is required").notEmpty();
     req.checkBody("phoneNumber", "Phone Number field is required").notEmpty();
 
     //Check for errors
-    var errors = req.validationErrors();
+    const errors = req.validationErrors();
     if (errors) {
         res.status(422).json({
             message: "Please fill all the fields",
@@ -89,10 +89,10 @@ router.post('/update', passport.authenticate('jwt', { session: false }), functio
 
     } else {
 
-        var today = new Date();
-        var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var currentDateTime = date + ' ' + time;
+        const today = new Date();
+        const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        const currentDateTime = date + ' ' + time;
         user = req.user[0];
         let sql = "UPDATE users SET phoneNumber=?, name=?, updated_at=? WHERE id= ?";
         db.query(sql, [phoneNumber, name, currentDateTime, user.id], (err, result) => {
