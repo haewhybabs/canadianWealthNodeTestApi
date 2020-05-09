@@ -93,16 +93,41 @@ router.post('/registration', (req, res, next) => {
 
 });
 
-router.post('/login', passport.authenticate('local', { session: false }), function(req, res, next) {
-    const user = req.user;
-    const token = signToken(user[0].id)
+// router.post('/login', passport.authenticate('local', { session: false }), function(req, res, next) {
+//     if (!req.user) {
+//         console.log('No')
+//     }
+//     const user = req.user;
+//     const token = signToken(user[0].id)
 
-    res.status(200).json({
-        status: true,
-        token,
-        data: user[0],
-    });
+//     res.status(200).json({
+//         status: true,
+//         token,
+//         data: user[0],
+//     });
+// });
+
+router.post('/login', function(req, res, next) {
+    passport.authenticate('local', function(err, user, info) {
+        if (err) { return next(err); }
+        if (!user) {
+            return res.status(200).json({
+                status: false,
+                message: 'Invalid email or password'
+            });
+        }
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+            return res.status(200).json({
+                status: true,
+                token,
+                data: user[0],
+            });
+        });
+    })(req, res, next);
 });
+
+
 
 
 module.exports = router;
