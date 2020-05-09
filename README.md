@@ -8,9 +8,9 @@ follow the following commands to get it started:
 
 ## Documentation
 There are 6 endppoints for the API
-* **Registration** : post request to;   "servername"/users/registration , with **name,email,password,password_confirmation and phoneNumber for the input post**
+* **Registration** : post request to;   "servername"/user/registration , with **name,email,password,password_confirmation and phoneNumber for the input post**
 
-*  **Login :** post request to ; "servername"/users/login , with **email** and **password** for the input post
+*  **Login :** post request to ; "servername"/user/login , with **email** and **password** for the input post
 * **Reset Password :** post request to ; "servername"/user/reset-password . ....
 * **Profile :** post request to ; "servername"/profile . It will give the profile details. The *authorization* token is required for the request
 * **Upload Image  :** post request to ; "servername"/profile/upload.The *authorization* token, *profileImage* are required for the request
