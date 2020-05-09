@@ -6,6 +6,8 @@ const { JwT_SECRET } = require('../configuration.js');
 const passport = require('passport');
 const passportConf = require('../passport');
 
+var nodemailer = require('nodemailer');
+
 signToken = userId => {
     return JWT.sign({
         iss: 'canadianwealth',
@@ -14,6 +16,18 @@ signToken = userId => {
         exp: new Date().setDate(new Date().getDate() + 1) //Current time + 1 day ahead
     }, JwT_SECRET);
 }
+
+function makeRandom(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
 router.post('/registration', (req, res, next) => {
 
     var name = req.body.name;
@@ -124,6 +138,64 @@ router.post('/login', function(req, res, next) {
         }
 
     })(req, res, next);
+});
+
+router.post('/reset-password', (req, res, next) => {
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'haewhydev@gmail.com',
+            pass: 'babalola774'
+        }
+    });
+
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    const currentDateTime = date + ' ' + time;
+    const email = req.body.email;
+
+
+    let sql = "Select * from users WHERE email=" + db.escape(req.body.email);
+    db.query(sql, (err, result) => {
+        if (err) { throw err }
+        let newPassword = makeRandom(7);
+        bcrypt.genSalt(10, function(err, salt) {
+
+            bcrypt.hash(newPassword, salt, function(err, hash) {
+                //Hash password
+                let newHashPassword = hash;
+
+
+                let sql = "UPDATE users SET password=?,updated_at=? WHERE email=?";
+                db.query(sql, [newHashPassword, currentDateTime, email], (err, result) => {
+
+                    if (err) { throw err }
+
+                    var mailOptions = {
+                        from: 'haewhydev@gmail.com',
+                        to: email,
+                        subject: 'Password Reset',
+                        text: 'Hello! Your new password is : ' + newPassword
+                    };
+
+                    transporter.sendMail(mailOptions, function(error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent ' + info.response);
+
+                            res.status(200).json({
+                                status: true,
+                            });
+                        }
+                    });
+                })
+            });
+        });
+
+    })
 });
 
 
