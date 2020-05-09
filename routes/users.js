@@ -160,40 +160,46 @@ router.post('/reset-password', (req, res, next) => {
     let sql = "Select * from users WHERE email=" + db.escape(req.body.email);
     db.query(sql, (err, result) => {
         if (err) { throw err }
-        let newPassword = makeRandom(7);
-        bcrypt.genSalt(10, function(err, salt) {
+        if (result.length > 0) {
+            let newPassword = makeRandom(7);
+            bcrypt.genSalt(10, function(err, salt) {
 
-            bcrypt.hash(newPassword, salt, function(err, hash) {
-                //Hash password
-                let newHashPassword = hash;
+                bcrypt.hash(newPassword, salt, function(err, hash) {
+                    //Hash password
+                    let newHashPassword = hash;
 
 
-                let sql = "UPDATE users SET password=?,updated_at=? WHERE email=?";
-                db.query(sql, [newHashPassword, currentDateTime, email], (err, result) => {
+                    let sql = "UPDATE users SET password=?,updated_at=? WHERE email=?";
+                    db.query(sql, [newHashPassword, currentDateTime, email], (err, result) => {
 
-                    if (err) { throw err }
+                        if (err) { throw err }
 
-                    var mailOptions = {
-                        from: 'haewhydev@gmail.com',
-                        to: email,
-                        subject: 'Password Reset',
-                        text: 'Hello! Your new password is : ' + newPassword
-                    };
+                        var mailOptions = {
+                            from: 'haewhydev@gmail.com',
+                            to: email,
+                            subject: 'Password Reset',
+                            text: 'Hello! Your new password is : ' + newPassword
+                        };
 
-                    transporter.sendMail(mailOptions, function(error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent ' + info.response);
+                        transporter.sendMail(mailOptions, function(error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent ' + info.response);
 
-                            res.status(200).json({
-                                status: true,
-                            });
-                        }
-                    });
-                })
+                                res.status(200).json({
+                                    status: true,
+                                });
+                            }
+                        });
+                    })
+                });
             });
-        });
+        } else {
+            res.status(200).json({
+                status: false,
+            });
+        }
 
     })
 });
