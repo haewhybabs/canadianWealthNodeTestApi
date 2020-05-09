@@ -113,17 +113,16 @@ router.post('/login', function(req, res, next) {
         if (!user) {
             return res.status(200).json({
                 status: false,
-                message: 'Invalid email or password'
             });
-        }
-        req.logIn(user, function(err) {
-            if (err) { return next(err); }
+        } else {
+            const token = signToken(user[0].id)
             return res.status(200).json({
                 status: true,
                 token,
                 data: user[0],
             });
-        });
+        }
+
     })(req, res, next);
 });
 
